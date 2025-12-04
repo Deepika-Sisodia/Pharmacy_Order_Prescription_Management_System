@@ -1,18 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import DeliveryDashboard from './Delivery_Agent_Dashboard/DeliveryDashboard';
-import './App.css';
+import PharmacistApp from "./pharmacist_dashboard/PharmacistApp";
+import "./App.css";
+import "./index.css";
 
 function App() {
-  return (
-    <Router>
-      <div className="app-container">
-        <Routes>
-          <Route path="/" element={<Navigate to="/delivery-dashboard" replace />} />
-          <Route path="/delivery-dashboard" element={<DeliveryDashboard />} />
-        </Routes>
-      </div>
-    </Router>
-  );
+  return <PharmacistApp />;
 }
 
 export default App;

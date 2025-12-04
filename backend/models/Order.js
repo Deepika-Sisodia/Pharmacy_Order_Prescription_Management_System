@@ -1,22 +1,39 @@
 import mongoose from 'mongoose';
 
 const orderSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    prescriptionUrl: {
+        type: String,
+    },
     items: [{
-        medicine: { type: mongoose.Schema.Types.ObjectId, ref: 'Medicine', required: true },
-        quantity: { type: Number, required: true, min: 1 },
-        price: { type: Number, required: true } // Price at time of order
+        medicineId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Medicine',
+        },
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true },
     }],
-    totalAmount: { type: Number, required: true },
+    totalAmount: {
+        type: Number,
+        default: 0,
+    },
     status: {
         type: String,
-        enum: ['pending_verification', 'processing', 'out_for_delivery', 'delivered', 'cancelled'],
-        default: 'pending_verification'
+        enum: ['PENDING_VERIFICATION', 'REJECTED', 'APPROVED', 'PROCESSING', 'OUT_FOR_DELIVERY', 'DELIVERED'],
+        default: 'PENDING_VERIFICATION',
     },
-    prescription: { type: mongoose.Schema.Types.ObjectId, ref: 'Prescription' },
-    deliveryAgent: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Or DeliveryAgent model
-    deliveryAddress: { type: String, required: true },
-    paymentStatus: { type: String, enum: ['pending', 'paid', 'failed'], default: 'pending' }
+    deliveryAddress: {
+        type: String,
+        required: true,
+    },
+    deliveryAgent: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
 }, { timestamps: true });
 
 export default mongoose.model('Order', orderSchema);

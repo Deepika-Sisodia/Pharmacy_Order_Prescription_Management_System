@@ -2,24 +2,14 @@ import Prescription from '../models/Prescription.js';
 import multer from 'multer';
 import path from 'path';
 
-// Set up storage engine
-const storage = multer.diskStorage({
-    destination: './uploads/',
-    filename: function (req, file, cb) {
-        cb(
-            null,
-            file.fieldname + '-' + Date.now() + path.extname(file.originalname)
-        );
-    },
-});
+import { storage } from '../config/cloudinary.js';
 
 // Init upload
 const upload = multer({
     storage: storage,
     limits: { fileSize: 5000000 }, // 5MB limit
-    fileFilter: function (req, file, cb) {
-        checkFileType(file, cb);
-    },
+    // fileFilter is handled by CloudinaryStorage params mostly, but we can keep additional checks if needed
+    // For simplicity with CloudinaryStorage, we rely on allowed_formats there
 }).single('image'); // 'image' is the field name
 
 // Check file type
@@ -49,7 +39,7 @@ export const uploadPrescription = (req, res) => {
                 try {
                     const prescription = await Prescription.create({
                         user: req.user._id,
-                        image: `/uploads/${req.file.filename}`,
+                        image: req.file.path, // Cloudinary returns the URL in 'path'
                         status: 'pending',
                     });
                     res.status(201).json(prescription);

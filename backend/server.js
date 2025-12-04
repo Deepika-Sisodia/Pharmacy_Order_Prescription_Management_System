@@ -4,11 +4,13 @@ import cors from 'cors';
 import connectDB from './db/db.js';
 import authRoutes from './routes/authRoutes.js';
 
+import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import prescriptionRoutes from './routes/prescriptionRoutes.js';
 import medicineRoutes from './routes/medicineRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import pharmacistRoutes from './routes/pharmacistRoutes.js';
 
 dotenv.config();
 
@@ -22,12 +24,14 @@ const __dirname = path.dirname(__filename);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api/medicines', medicineRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/pharmacist', pharmacistRoutes);
 
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));

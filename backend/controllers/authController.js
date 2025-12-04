@@ -36,16 +36,26 @@ export const registerUser = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role: role || 'customer', // Default to customer if not specified
+            role: role || 'customer',
         });
 
         if (user) {
+            const token = generateToken(user._id);
+
+            // Set cookie
+            res.cookie('jwt', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV !== 'development', // Use secure cookies in production
+                sameSite: 'strict', // Prevent CSRF attacks
+                maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+            });
+
             res.status(201).json({
                 _id: user.id,
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                token: generateToken(user._id),
+                token: token,
             });
         } else {
             res.status(400).json({ message: 'Invalid user data' });
@@ -67,12 +77,21 @@ export const loginUser = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (user && (await bcrypt.compare(password, user.password))) {
+            const token = generateToken(user._id);
+
+            // Set cookie
+            res.cookie('jwt', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV !== 'development',
+                sameSite: 'strict',
+                maxAge: 30 * 24 * 60 * 60 * 1000,
+            });
+
             res.json({
                 _id: user.id,
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                token: generateToken(user._id),
             });
         } else {
             res.status(400).json({ message: 'Invalid credentials' });
@@ -81,4 +100,15 @@ export const loginUser = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
+};
+
+// @desc    Logout user / clear cookie
+// @route   POST /api/auth/logout
+// @access  Public
+export const logoutUser = (req, res) => {
+    res.cookie('jwt', '', {
+        httpOnly: true,
+        expires: new Date(0),
+    });
+    res.status(200).json({ message: 'Logged out successfully' });
 };

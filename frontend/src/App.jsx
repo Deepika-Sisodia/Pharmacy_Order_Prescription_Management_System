@@ -1,6 +1,9 @@
-import React from 'react';
-import CustomerDashboard from './customer_dashboard/CustomerDashboard';
+import PharmacistApp from "./pharmacist_dashboard/PharmacistApp";
+import "./App.css";
+import "./index.css";
 
-export default function App(){
-  return <CustomerDashboard />;
+function App() {
+  return <PharmacistApp />;
 }
+
+export default App;
